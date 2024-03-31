@@ -15,7 +15,6 @@ pub fn THE_TEST() {
 }
 fn walk(crate_root: DependencyRoot) {
     let Ok(content) = std::fs::read_to_string(crate_root.join("Cargo.toml")) else {
-        eprintln!("Error: {crate_root:?} doesn't exist!");
         return;
     };
     let Ok(dependencies) = Dependency::parse(&content) else {
@@ -25,7 +24,6 @@ fn walk(crate_root: DependencyRoot) {
     for dependency in dependencies {
         let sources: Vec<SourceFile> = dependency.clone().into();
         for source in sources {
-            dbg!(&source);
             if source.THE_TEST().is_err() {
                 panic!("IMPURITY {source:?} is found in {dependency:?}")
             }
