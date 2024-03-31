@@ -10,6 +10,8 @@ use error::Error;
 
 type Result<T> = std::result::Result<T, Error>;
 
+/// # Panics:
+/// If the crate or its dependencies are impure (that is, not 💯% **`RUST`**)
 pub fn THE_TEST() {
     walk(DependencyRoot::new(".").unwrap());
 }
