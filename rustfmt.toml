@@ -1,0 +1,3 @@
+comment_width = 500
+imports_granularity = "crate"
+group_imports = "StdExternalCrate"
