@@ -29,7 +29,7 @@ pub struct DependencyRoot(PathBuf);
 pub struct SourceFile(PathBuf);
 
 impl Dependency {
-    pub fn parse<A>(toml: &A) -> Result<Vec<Self>>
+    pub fn parse_from_toml<A>(toml: &A) -> Result<Vec<Self>>
     where
         A: AsRef<str>,
     {
@@ -112,8 +112,18 @@ impl DependencyRoot {
             Err(Error::NotCrateRoot)
         }
     }
+    pub fn get_sources(self) -> Vec<SourceFile> {
+        self.into()
+    }
 }
 impl From<DependencyRoot> for Vec<SourceFile> {
+    /*
+    * I don't know why put the implementation in this From impl. It should be in
+    * `DependencyRoot::get_sources()`
+    *
+    * But I won't copy-paste this code. It's an art, nobody redraws Mono Lisa.
+    * Likewise, this is my Rust-canvas, where I draw my (schizophrenic) (actually not) masterpieces
+    */
     fn from(root: DependencyRoot) -> Self {
         let mut stack = vec![root];
         let mut files = Vec::new();
@@ -125,6 +135,8 @@ impl From<DependencyRoot> for Vec<SourceFile> {
              * few hours figuring out how cargo resolves that stuff, thus ignoring for now.
              *
              * Perhaps the crate is stored somewhere else, but this is tricky in anyway
+             *
+             * 30.06.2024: Still no idea and desire to dig in
              */
             let Ok(entries) = fs::read_dir(entry) else {
                 continue;
@@ -136,6 +148,7 @@ impl From<DependencyRoot> for Vec<SourceFile> {
             {
                 if path.is_dir() {
                     // todo: handle it
+                    // 30.06.2024: Handle what?
                     let dirname = path.file_name().and_then(|os| os.to_str()).unwrap();
                     if !IGNORED_DIRS.contains(&dirname) && !dirname.starts_with('.') {
                         stack.push(DependencyRoot(path));
